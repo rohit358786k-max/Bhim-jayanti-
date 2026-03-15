@@ -9,28 +9,28 @@
         * { box-sizing: border-box; font-family: 'Arial', sans-serif; }
         body { background-color: #f0f2f5; padding: 10px; margin: 0; text-align: center; }
 
-        /* माहिती भरण्याचा फॉर्म */
         .form-container {
             background: white; padding: 12px; border-radius: 10px;
             width: 100%; max-width: 380px; margin: 0 auto 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; outline: none; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; }
 
-        /* पावती डिझाइन (Compact Mobile Version) */
+        /* पावती डिझाइन */
         .receipt-card {
             background: #fff; width: 100%; max-width: 360px; margin: 0 auto;
-            border: 4px double #00008B; border-radius: 10px; padding: 8px 12px;
+            border: 4px double #00008B; border-radius: 10px; padding: 10px 15px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2); text-align: left;
-            /* अशोक चक्र बॅकग्राउंड */
+            position: relative;
+            
+            /* तुमची डाऊनलोड केलेली बॅकग्राउंड इमेज */
             background-image: linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)), 
-                              url('https://png.pngtree.com/background/20250122/original/pngtree-the-ashoka-chakra-has-24-intricate-spokes-and-is-encircled-by-picture-image_15584876.jpg');
-            background-size: cover; background-position: center;
+                              url('background.jpg');
+            background-size: cover;
+            background-position: center;
         }
 
         .photo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        
-        /* फोटो गोल फ्रेम */
         .photo-box {
             width: 65px; height: 65px; border-radius: 50%; border: 2px solid #00008B;
             overflow: hidden; background: #eee;
@@ -41,30 +41,25 @@
         .header h1 { margin: 2px 0; font-size: 18px; }
         .village-name { font-size: 16px; color: #cc0000; font-weight: bold; }
 
-        .content { font-size: 14px; line-height: 1.6; color: #222; }
+        .content { font-size: 15px; line-height: 1.7; color: #222; }
         .dynamic-value { color: #d32f2f; font-weight: bold; border-bottom: 1px dotted #999; }
 
-        .footer { margin-top: 10px; text-align: right; font-weight: bold; border-top: 1px solid #ddd; padding-top: 4px; font-size: 12px; }
+        .footer { margin-top: 10px; text-align: right; font-weight: bold; border-top: 1px solid #ddd; padding-top: 5px; font-size: 13px; }
 
-        /* बटणे */
         .btn-group { margin-top: 15px; display: flex; justify-content: center; gap: 8px; max-width: 380px; margin: 15px auto; }
         .btn { padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; flex: 1; }
         .btn-save { background: #28a745; color: white; }
         .btn-view { background: #00008B; color: white; }
 
-        /* ऑपरेटर यादी विभाग */
-        #operatorSection { display: none; margin-top: 20px; background: white; padding: 10px; border-radius: 10px; width: 100%; max-width: 380px; margin-left: auto; margin-right: auto; }
+        #operatorSection { display: none; margin-top: 20px; background: white; padding: 10px; border-radius: 10px; width: 100%; max-width: 380px; margin: 0 auto; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background: #00008B; color: white; }
-
-        @media print { .form-container, .btn-group, #operatorSection { display: none; } }
     </style>
 </head>
 <body>
 
 <div class="form-container">
-    <h3 style="color: #00008B; margin-top: 0; font-size: 16px;">वर्गणी माहिती भरा</h3>
     <input type="text" id="inputName" placeholder="दात्याचे नाव" oninput="updateReceipt()">
     <input type="number" id="inputAmount" placeholder="रक्कम (₹)" oninput="updateReceipt()">
     <input type="text" id="inputMobile" placeholder="मोबाईल नंबर" oninput="updateReceipt()">
@@ -73,11 +68,11 @@
 <div id="printableReceipt" class="receipt-card">
     <div class="photo-header">
         <div class="photo-box">
-            <img src="https://i.pinimg.com/736x/09/65/f2/0965f2f797f84ee1629f36ce9ad4f49a.jpg" alt="Buddha">
+            <img src="buddha.jpg" alt="Buddha">
         </div>
         <div style="font-weight: bold; color: #00008B; font-size: 13px;">॥ जय भीम ॥</div>
         <div class="photo-box">
-            <img src="https://oshiprint.in/image/cache/catalog/poster/new/mqp500-640x640h.jpeg.webp" alt="Ambedkar">
+            <img src="ambedkar.jpg" alt="Ambedkar">
         </div>
     </div>
     <div class="header">
@@ -97,23 +92,19 @@
 
 <div class="btn-group">
     <button class="btn btn-save" onclick="handleSave()">📥 पावती आणि सेव्ह</button>
-    <button class="btn btn-view" onclick="toggleOperator()">👁️ यादी पहा</button>
+    <button class="btn btn-view" onclick="toggleOperator()">👁️ यादी</button>
 </div>
 
 <div id="operatorSection">
-    <h4 style="margin: 0 0 10px 0;">ऑपरेटर रेकॉर्ड</h4>
-    <table id="varganiTable">
-        <thead>
-            <tr><th>नाव</th><th>रक्कम</th></tr>
-        </thead>
+    <h4>आजचे रेकॉर्ड</h4>
+    <table>
+        <thead><tr><th>नाव</th><th>रक्कम</th></tr></thead>
         <tbody id="tableBody"></tbody>
     </table>
-    <p style="font-size: 10px; color: grey; margin-top: 10px;">टीप: हा डेटा तुमच्या गुगल शीटमध्ये सुद्धा जमा होत आहे.</p>
 </div>
 
 <script>
-    // तुमची Apps Script URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbw8EpQ8WFrray-VtydMUkiUdaYJABljjDb9h1RPhYshIjcwvETXEipDIy7vZHHEUENt1A/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz9kBJJJnP23AbBJsmCpz8Cn1dFHnVSCDN5DiEAr33pwafkXEAGKJTyZXE-q9dBFcCEUw/exec';
 
     function updateReceipt() {
         document.getElementById('dispName').innerText = document.getElementById('inputName').value || "__________";
@@ -126,36 +117,27 @@
         const amount = document.getElementById('inputAmount').value;
         const mobile = document.getElementById('inputMobile').value;
 
-        if (!name || !amount) {
-            alert("कृपया नाव आणि रक्कम भरा!");
-            return;
-        }
+        if (!name || !amount) return alert("माहिती भरा!");
 
-        // १. Google Sheets मध्ये डेटा पाठवणे
+        // Google Sheet मध्ये डेटा पाठवणे
         fetch(scriptURL, {
             method: 'POST',
             mode: 'no-cors',
-            cache: 'no-cache',
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, amount, mobile })
-        })
-        .then(() => console.log('Sheet Updated'))
-        .catch(error => console.error('Error!', error.message));
+        });
 
-        // २. पावतीचा फोटो डाउनलोड करणे
+        // पावती इमेज म्हणून डाऊनलोड करणे
         const receipt = document.getElementById('printableReceipt');
-        const canvas = await html2canvas(receipt, { useCORS: true, scale: 2 });
+        const canvas = await html2canvas(receipt, { scale: 2, useCORS: true });
         const link = document.createElement('a');
         link.download = `Pavati_${name}.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
 
-        // ३. लोकल टेबलमध्ये माहिती जोडणे
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML += `<tr><td>${name}</td><td>${amount}</td></tr>`;
-
-        // फॉर्म क्लियर करणे
-        alert("पावती डाऊनलोड झाली आणि गुगल शीटमध्ये सेव्ह झाली!");
+        // टेबल अपडेट करणे
+        document.getElementById('tableBody').innerHTML += `<tr><td>${name}</td><td>${amount}</td></tr>`;
+        
+        alert("पावती डाऊनलोड झाली!");
         document.getElementById('inputName').value = "";
         document.getElementById('inputAmount').value = "";
         document.getElementById('inputMobile').value = "";
@@ -163,13 +145,10 @@
     }
 
     function toggleOperator() {
-        const pass = prompt("पासवर्ड टाका:");
-        if (pass === "1234") {
+        if (prompt("पासवर्ड टाका:") === "1234") {
             const s = document.getElementById('operatorSection');
             s.style.display = s.style.display === "none" ? "block" : "none";
-        } else {
-            alert("चुकीचा पासवर्ड!");
-        }
+        } else alert("चुकीचा पासवर्ड!");
     }
 </script>
 
