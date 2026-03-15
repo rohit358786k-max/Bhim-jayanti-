@@ -9,30 +9,19 @@
     <style>
         * { box-sizing: border-box; font-family: 'Arial', sans-serif; }
         body { background-color: #f0f2f5; padding: 10px; margin: 0; text-align: center; }
-
-        .form-container {
-            background: white; padding: 12px; border-radius: 10px;
-            width: 100%; max-width: 380px; margin: 0 auto 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+        .form-container { background: white; padding: 12px; border-radius: 10px; width: 100%; max-width: 380px; margin: 0 auto 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; }
 
-        /* पावती कार्ड डिझाइन */
+        /* पावती डिझाइन */
         .receipt-card {
-            background: #fff; width: 360px; margin: 0 auto;
-            border: 4px double #00008B; border-radius: 10px; padding: 15px;
+            background: #fff; width: 360px; margin: 0 auto; border: 4px double #00008B; border-radius: 10px; padding: 15px;
             text-align: left; position: relative;
-            background-image: linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)), 
-                              url('background.jpg');
+            background-image: linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)), url('background.jpg');
             background-size: cover; background-position: center;
         }
 
-        /* फोटोचा क्रम: १. बाबासाहेब (डावीकडे), २. बुद्ध (उजवीकडे) */
         .photo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .photo-box {
-            width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00008B;
-            overflow: hidden; background: #eee;
-        }
+        .photo-box { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00008B; overflow: hidden; background: #eee; }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
 
         .header { text-align: center; color: #00008B; border-bottom: 2px solid #00008B; margin-bottom: 10px; }
@@ -43,8 +32,8 @@
         .dynamic-value { color: #d32f2f; font-weight: bold; border-bottom: 1px dotted #999; }
         .footer { margin-top: 15px; text-align: right; font-weight: bold; border-top: 1px solid #ddd; padding-top: 5px; }
 
-        .btn-save { background: #28a745; color: white; padding: 15px; border: none; border-radius: 5px; 
-                    font-weight: bold; cursor: pointer; width: 100%; max-width: 380px; margin-top: 10px; }
+        .btn-save { background: #28a745; color: white; padding: 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; max-width: 380px; margin-top: 10px; }
+        #loading { display: none; color: #00008B; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -57,13 +46,9 @@
 
 <div id="printableReceipt" class="receipt-card">
     <div class="photo-header">
-        <div class="photo-box">
-            <img src="ambedkar.jpg" alt="Ambedkar">
-        </div>
+        <div class="photo-box"><img src="ambedkar.jpg" alt="Ambedkar"></div>
         <div style="font-weight: bold; color: #00008B; font-size: 14px;">॥ जय भीम ॥</div>
-        <div class="photo-box">
-            <img src="buddha.jpg" alt="Buddha">
-        </div>
+        <div class="photo-box"><img src="buddha.jpg" alt="Buddha"></div>
     </div>
     <div class="header">
         <h1>भीम जयंती उत्सव २०२६</h1>
@@ -80,10 +65,10 @@
     <div class="footer">विनित: भीम जयंती उत्सव समिती</div>
 </div>
 
-<button class="btn-save" onclick="handleSave()">📥 PDF पावती डाऊनलोड करा</button>
+<button class="btn-save" id="btnDownload" onclick="handleSave()">📥 PDF पावती डाऊनलोड करा</button>
+<div id="loading">प्रत तयार होत आहे, कृपया थांबा...</div>
 
 <script>
-    // तुमची Apps Script URL खात्री करून घ्या
     const scriptURL = 'https://script.google.com/macros/s/AKfycbz9kBJJJnP23AbBJsmCpz8Cn1dFHnVSCDN5DiEAr33pwafkXEAGKJTyZXE-q9dBFcCEUw/exec';
 
     function updateReceipt() {
@@ -93,15 +78,47 @@
     }
 
     async function handleSave() {
-        const { jsPDF } = window.jspdf;
         const name = document.getElementById('inputName').value;
         const amount = document.getElementById('inputAmount').value;
         const mobile = document.getElementById('inputMobile').value;
 
-        if (!name || !amount) return alert("कृपया माहिती भरा!");
+        if (!name || !amount) return alert("माहिती भरा!");
 
-        // १. Google Sheet मध्ये डेटा पाठवणे
-        fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ name, amount, mobile }) });
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('btnDownload').disabled = true;
 
-        // २. पावतीची
-    
+        // १. डेटा गुगल शीटला पाठवणे
+        try {
+            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ name, amount, mobile }) });
+        } catch (e) { console.log("Sheet Error"); }
+
+        // २. PDF तयार करणे (Wait for images to render)
+        setTimeout(async () => {
+            try {
+                const { jsPDF } = window.jspdf;
+                const receipt = document.getElementById('printableReceipt');
+                const canvas = await html2canvas(receipt, { scale: 2, useCORS: true, allowTaint: true });
+                const imgData = canvas.toDataURL('image/png');
+
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const imgWidth = 150; 
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                pdf.addImage(imgData, 'PNG', (pdfWidth - imgWidth) / 2, 20, imgWidth, imgHeight);
+                pdf.save(`Pavati_${name}.pdf`);
+                
+                alert("डाऊनलोड यशस्वी!");
+            } catch (error) {
+                alert("डाऊनलोड करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.");
+                console.error(error);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('btnDownload').disabled = false;
+            }
+        }, 1000); // १ सेकंद थांबून डाऊनलोड होईल
+    }
+</script>
+
+</body>
+</html>
