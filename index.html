@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>भीम जयंती २०२६ - अंतरवाली टेंभी</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Arial', sans-serif; }
         body { background-color: #f0f2f5; padding: 10px; margin: 0; text-align: center; }
@@ -16,45 +17,34 @@
         }
         input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; }
 
-        /* पावती डिझाइन */
+        /* पावती कार्ड डिझाइन */
         .receipt-card {
-            background: #fff; width: 100%; max-width: 360px; margin: 0 auto;
-            border: 4px double #00008B; border-radius: 10px; padding: 10px 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2); text-align: left;
-            position: relative;
-            
-            /* तुमची डाऊनलोड केलेली बॅकग्राउंड इमेज */
+            background: #fff; width: 360px; margin: 0 auto;
+            border: 4px double #00008B; border-radius: 10px; padding: 15px;
+            text-align: left; position: relative;
             background-image: linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)), 
                               url('background.jpg');
-            background-size: cover;
-            background-position: center;
+            background-size: cover; background-position: center;
         }
 
+        /* फोटोचा क्रम: १. बाबासाहेब (डावीकडे), २. बुद्ध (उजवीकडे) */
         .photo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .photo-box {
-            width: 65px; height: 65px; border-radius: 50%; border: 2px solid #00008B;
+            width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00008B;
             overflow: hidden; background: #eee;
         }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        .header { text-align: center; color: #00008B; border-bottom: 1.5px solid #00008B; padding-bottom: 3px; margin-bottom: 8px; }
-        .header h1 { margin: 2px 0; font-size: 18px; }
-        .village-name { font-size: 16px; color: #cc0000; font-weight: bold; }
+        .header { text-align: center; color: #00008B; border-bottom: 2px solid #00008B; margin-bottom: 10px; }
+        .header h1 { margin: 2px 0; font-size: 20px; }
+        .village-name { font-size: 18px; color: #cc0000; font-weight: bold; }
 
-        .content { font-size: 15px; line-height: 1.7; color: #222; }
+        .content { font-size: 16px; line-height: 1.8; color: #222; }
         .dynamic-value { color: #d32f2f; font-weight: bold; border-bottom: 1px dotted #999; }
+        .footer { margin-top: 15px; text-align: right; font-weight: bold; border-top: 1px solid #ddd; padding-top: 5px; }
 
-        .footer { margin-top: 10px; text-align: right; font-weight: bold; border-top: 1px solid #ddd; padding-top: 5px; font-size: 13px; }
-
-        .btn-group { margin-top: 15px; display: flex; justify-content: center; gap: 8px; max-width: 380px; margin: 15px auto; }
-        .btn { padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; flex: 1; }
-        .btn-save { background: #28a745; color: white; }
-        .btn-view { background: #00008B; color: white; }
-
-        #operatorSection { display: none; margin-top: 20px; background: white; padding: 10px; border-radius: 10px; width: 100%; max-width: 380px; margin: 0 auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background: #00008B; color: white; }
+        .btn-save { background: #28a745; color: white; padding: 15px; border: none; border-radius: 5px; 
+                    font-weight: bold; cursor: pointer; width: 100%; max-width: 380px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -68,11 +58,11 @@
 <div id="printableReceipt" class="receipt-card">
     <div class="photo-header">
         <div class="photo-box">
-            <img src="buddha.jpg" alt="Buddha">
-        </div>
-        <div style="font-weight: bold; color: #00008B; font-size: 13px;">॥ जय भीम ॥</div>
-        <div class="photo-box">
             <img src="ambedkar.jpg" alt="Ambedkar">
+        </div>
+        <div style="font-weight: bold; color: #00008B; font-size: 14px;">॥ जय भीम ॥</div>
+        <div class="photo-box">
+            <img src="buddha.jpg" alt="Buddha">
         </div>
     </div>
     <div class="header">
@@ -90,20 +80,10 @@
     <div class="footer">विनित: भीम जयंती उत्सव समिती</div>
 </div>
 
-<div class="btn-group">
-    <button class="btn btn-save" onclick="handleSave()">📥 पावती आणि सेव्ह</button>
-    <button class="btn btn-view" onclick="toggleOperator()">👁️ यादी</button>
-</div>
-
-<div id="operatorSection">
-    <h4>आजचे रेकॉर्ड</h4>
-    <table>
-        <thead><tr><th>नाव</th><th>रक्कम</th></tr></thead>
-        <tbody id="tableBody"></tbody>
-    </table>
-</div>
+<button class="btn-save" onclick="handleSave()">📥 PDF पावती डाऊनलोड करा</button>
 
 <script>
+    // तुमची Apps Script URL खात्री करून घ्या
     const scriptURL = 'https://script.google.com/macros/s/AKfycbz9kBJJJnP23AbBJsmCpz8Cn1dFHnVSCDN5DiEAr33pwafkXEAGKJTyZXE-q9dBFcCEUw/exec';
 
     function updateReceipt() {
@@ -113,44 +93,15 @@
     }
 
     async function handleSave() {
+        const { jsPDF } = window.jspdf;
         const name = document.getElementById('inputName').value;
         const amount = document.getElementById('inputAmount').value;
         const mobile = document.getElementById('inputMobile').value;
 
-        if (!name || !amount) return alert("माहिती भरा!");
+        if (!name || !amount) return alert("कृपया माहिती भरा!");
 
-        // Google Sheet मध्ये डेटा पाठवणे
-        fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({ name, amount, mobile })
-        });
+        // १. Google Sheet मध्ये डेटा पाठवणे
+        fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ name, amount, mobile }) });
 
-        // पावती इमेज म्हणून डाऊनलोड करणे
-        const receipt = document.getElementById('printableReceipt');
-        const canvas = await html2canvas(receipt, { scale: 2, useCORS: true });
-        const link = document.createElement('a');
-        link.download = `Pavati_${name}.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-
-        // टेबल अपडेट करणे
-        document.getElementById('tableBody').innerHTML += `<tr><td>${name}</td><td>${amount}</td></tr>`;
-        
-        alert("पावती डाऊनलोड झाली!");
-        document.getElementById('inputName').value = "";
-        document.getElementById('inputAmount').value = "";
-        document.getElementById('inputMobile').value = "";
-        updateReceipt();
-    }
-
-    function toggleOperator() {
-        if (prompt("पासवर्ड टाका:") === "1234") {
-            const s = document.getElementById('operatorSection');
-            s.style.display = s.style.display === "none" ? "block" : "none";
-        } else alert("चुकीचा पासवर्ड!");
-    }
-</script>
-
-</body>
-</html>
+        // २. पावतीची
+    
